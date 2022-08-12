@@ -1,0 +1,66 @@
+//
+// !!! WARNING !!! AUTO-GENERATED FILE!
+// PLEASE DO NOT MODIFY IT AND USE "platformio.ini":
+// https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
+//
+{
+    "configurations": [
+        {
+            "name": "PlatformIO",
+            "includePath": [
+                "/home/rod/Documents/PlatformIO/Projects/PMTR_001_CLI/include",
+                "/home/rod/Documents/PlatformIO/Projects/PMTR_001_CLI/src",
+                "/home/rod/Documents/PlatformIO/Projects/PMTR_001_CLI/lib/ArduinoModbus/src",
+                "/home/rod/Documents/PlatformIO/Projects/PMTR_001_CLI/lib/ArduinoRS485/src",
+                "/home/rod/.platformio/packages/framework-arduino-avr/cores/arduino",
+                "/home/rod/.platformio/packages/framework-arduino-avr/variants/mega",
+                "/home/rod/Documents/PlatformIO/Projects/PMTR_001_CLI/lib/DHT_sensor_library",
+                "/home/rod/Documents/PlatformIO/Projects/PMTR_001_CLI/lib/DallasTemperature",
+                "/home/rod/Documents/PlatformIO/Projects/PMTR_001_CLI/lib/PZEM0047",
+                "/home/rod/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                "/home/rod/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                "/home/rod/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                "/home/rod/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                "/home/rod/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                ""
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "/home/rod/Documents/PlatformIO/Projects/PMTR_001_CLI/include",
+                    "/home/rod/Documents/PlatformIO/Projects/PMTR_001_CLI/src",
+                    "/home/rod/Documents/PlatformIO/Projects/PMTR_001_CLI/lib/ArduinoModbus/src",
+                    "/home/rod/Documents/PlatformIO/Projects/PMTR_001_CLI/lib/ArduinoRS485/src",
+                    "/home/rod/.platformio/packages/framework-arduino-avr/cores/arduino",
+                    "/home/rod/.platformio/packages/framework-arduino-avr/variants/mega",
+                    "/home/rod/Documents/PlatformIO/Projects/PMTR_001_CLI/lib/DHT_sensor_library",
+                    "/home/rod/Documents/PlatformIO/Projects/PMTR_001_CLI/lib/DallasTemperature",
+                    "/home/rod/Documents/PlatformIO/Projects/PMTR_001_CLI/lib/PZEM0047",
+                    "/home/rod/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                    "/home/rod/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                    "/home/rod/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                    "/home/rod/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                    "/home/rod/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                    ""
+                ]
+            },
+            "defines": [
+                "PLATFORMIO=60103",
+                "ARDUINO_AVR_MEGA2560",
+                "F_CPU=16000000L",
+                "ARDUINO_ARCH_AVR",
+                "ARDUINO=10808",
+                "__AVR_ATmega2560__",
+                ""
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "compilerPath": "/home/rod/.platformio/packages/toolchain-atmelavr/bin/avr-gcc",
+            "compilerArgs": [
+                "-mmcu=atmega2560",
+                ""
+            ]
+        }
+    ],
+    "version": 4
+}
