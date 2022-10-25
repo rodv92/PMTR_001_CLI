@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>PMTR</title>
+    <meta charset="UTF-8" />
+  </head>
+
+  <body>
+    <div id="app">
+    <canvas id="myChartVoltage"></canvas>
+    <canvas id="myChartCurrent"></canvas>
+    <canvas id="myChartEnergy"></canvas>
+    <canvas id="myChartPower"></canvas>
+    <canvas id="myChartFrequency"></canvas>
+    <canvas id="myChartpf"></canvas>
+    </div>
+<!--
+    <script src=luxon.min.js></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@^3"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon@^2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@^1"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script>
+
+	    /*
+responseJSON: Array(4506)
+[0 … 99]
+0:
+L1_active_power_W: "28.5"
+L1_current_A: "0.239"
+L1_energy_kWh: "0.33"
+L1_frequency_Hz: "50.0"
+L1_pf: "0.51"
+L1_voltage_V: "233.2"
+epoch: "2022-09-16 14:18:46"
+	   */
+    dt = luxon.DateTime.local(2017, 5, 15, 8, 30);
+    console.log('dt');
+    console.log(dt);
+    var get_args = ''; 
+    var jsondata = $.getJSON('http://192.168.18.16/pmtr/call.php',get_args, function(jsondata) {
+	console.log('jsondata');
+	console.log(jsondata);
+
+
+	var cle = 0;
+        var val = {};
+	var voltage = [];
+	var current = [];
+	var power = [];
+	var energy = [];
+	var freq = [];
+	var pf = [];
+        // mettre les autrse tableaux
+        for ([cle, val] of Object.entries(jsondata)) {
+
+	    voltage.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L1_voltage_V'] - 0)});
+	    current.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L1_current_A'] - 0)});
+	    power.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L1_active_power_W'] - 0)});
+	    energy.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L1_energy_kWh'] - 0)});
+	    freq.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L1_frequency_Hz'] - 0)});
+	    pf.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L1_pf'] - 0)});
+    	    
+	// push les autres sets
+	}
+
+	var data_voltage = {
+	  datasets: [{
+	    label: 'voltage_L1',
+	    backgroundColor: '#ffffff',
+	    borderColor: '#ff0000',
+	    fill: false,
+	    data: voltage,
+	  }
+		// ajouter les autres sets ici
+	  ]
+		}
+		var data_current = {
+	  datasets: [{
+	    label: 'current_L1',
+	    backgroundColor: '#ffffff',
+	    borderColor: '#ff0000',
+	    fill: false,
+	    data: current,
+	  }
+	  
+		// ajouter les autres sets ici
+	  ]
+		}
+		var data_power = {
+	  datasets: [{
+	    label: 'power_L1',
+	    backgroundColor: '#ffffff',
+	    borderColor: '#ff0000',
+	    fill: false,
+	    data: power,
+	  }
+		// ajouter les autres sets ici
+	  ]
+		}
+		var data_energy = {
+	  datasets: [{
+	    label: 'energy_L1',
+	    backgroundColor: '#ffffff',
+	    borderColor: '#ff0000',
+	    fill: false,
+	    data: energy,
+	  }
+		// ajouter les autres sets ici
+	  ]
+		}
+		var data_frequency = {
+	  datasets: [{
+	    label: 'frequency_L1',
+	    backgroundColor: '#ffffff',
+	    borderColor: '#ff0000',
+	    fill: false,
+	    data: freq,
+	  }
+		// ajouter les autres sets ici
+	  ]
+		}
+		var data_pf = {
+	  datasets: [{
+	    label: 'pf_L1',
+	    backgroundColor: '#ffffff',
+	    borderColor: '#ff0000',
+	    fill: false,
+	    data: pf,
+	  }
+		// ajouter les autres sets ici
+	  ]
+		}
+	
+
+	var config_voltage = {
+	  type: 'line',
+	  data: data_voltage,
+	  stepped: true,
+	  options: {
+	    scales: {
+	      x: {
+		type: 'time',
+		time: {
+		  // Luxon format string
+		  tooltipFormat: 'DD T'
+		},
+		title: {
+		  display: true,
+		  text: 'Date'
+		}
+	      },
+	      y: {
+		title: {
+		  display: true,
+		  text: 'value'
+		}
+	      }
+	    }			      
+          }
+        }
+		var config_current = {
+	  type: 'line',
+	  data: data_current,
+	  stepped: true,
+	  options: {
+	    scales: {
+	      x: {
+		type: 'time',
+		time: {
+		  // Luxon format string
+		  tooltipFormat: 'DD T'
+		},
+		title: {
+		  display: true,
+		  text: 'Date'
+		}
+	      },
+	      y: {
+		title: {
+		  display: true,
+		  text: 'value'
+		}
+	      }
+	    }			      
+          }
+		}
+		var config_power = {
+	  type: 'line',
+	  data: data_power,
+	  stepped: true,
+	  options: {
+	    scales: {
+	      x: {
+		type: 'time',
+		time: {
+		  // Luxon format string
+		  tooltipFormat: 'DD T'
+		},
+		title: {
+		  display: true,
+		  text: 'Date'
+		}
+	      },
+	      y: {
+		title: {
+		  display: true,
+		  text: 'value'
+		}
+	      }
+	    }			      
+          }
+		}
+		var config_energy = {
+	  type: 'line',
+	  data: data_energy,
+	  stepped: true,
+	  options: {
+	    scales: {
+	      x: {
+		type: 'time',
+		time: {
+		  // Luxon format string
+		  tooltipFormat: 'DD T'
+		},
+		title: {
+		  display: true,
+		  text: 'Date'
+		}
+	      },
+	      y: {
+		title: {
+		  display: true,
+		  text: 'value'
+		}
+	      }
+	    }			      
+          }
+		}
+		var config_frequency = {
+	  type: 'line',
+	  data: data_frequency,
+	  stepped: true,
+	  options: {
+	    scales: {
+	      x: {
+		type: 'time',
+		time: {
+		  // Luxon format string
+		  tooltipFormat: 'DD T'
+		},
+		title: {
+		  display: true,
+		  text: 'Date'
+		}
+	      },
+	      y: {
+		beginAtZero: false,
+		min: 49,
+		max: 51,
+		title: {
+		  display: true,
+		  text: 'value',
+		}
+	      }
+	    }			      
+          }
+		}
+		var config_pf = {
+	  type: 'line',
+	  data: data_pf,
+	  stepped: true,
+	  options: {
+	    scales: {
+	      x: {
+		type: 'time',
+		time: {
+		  // Luxon format string
+		  tooltipFormat: 'DD T'
+		},
+		title: {
+		  display: true,
+		  text: 'Date'
+		}
+	      },
+	      y: {
+		title: {
+		  display: true,
+		  text: 'value'
+		}
+	      }
+	    }			      
+          }
+        }
+
+
+	var myChartVoltage = new Chart(
+	    document.getElementById('myChartVoltage'),
+	    config_voltage
+	);
+	var myChartCurrent = new Chart(
+	    document.getElementById('myChartCurrent'),
+	    config_current
+	);
+	var myChartPower = new Chart(
+	    document.getElementById('myChartPower'),
+	    config_power
+	);
+	var myChartEnergy = new Chart(
+	    document.getElementById('myChartEnergy'),
+	    config_energy
+	);
+	var myChartFrequency = new Chart(
+	    document.getElementById('myChartFrequency'),
+	    config_frequency
+	);
+	var myChartpf = new Chart(
+	    document.getElementById('myChartpf'),
+	    config_pf
+	);
+	
+    }); 
+</script>
+
+</body>
+</html>
