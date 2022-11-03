@@ -4,10 +4,14 @@
 #//https://github.com/riptideio/pymodbus
 // by riptideio
 
-This project is based on the PZEM_004t power meter (on the server end)
+This is the client side for the three phase Power Meter, Telemetry  and Relay action (PMTR)
+project.
 
-This project contains firmware for the client.
+This project contains all the client code.
+
 The client is simply as Raspberry PI with an attached ES1642-NC module on the serial port pins, + RST pin.
+ES1642-NC is tied to the same phase as the server. a multi phase client is sensibgle upgrade for the future.
+
 Take care of using raspi-config to enable the serial port on the pins.
 
 The main code is python script using the pymodbus library, to query one or more servers.
