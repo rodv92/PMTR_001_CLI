@@ -14,55 +14,73 @@
     <canvas id="myChartFrequency"></canvas>
     <canvas id="myChartpf"></canvas>
     </div>
-<!--
-    <script src=luxon.min.js></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@^3"></script>
-<script src="https://cdn.jsdelivr.net/npm/luxon@^2"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@^1"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@^3"></script>
+	<script src="https://cdn.jsdelivr.net/npm/luxon@^2"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@^1"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script>
 
-	    /*
-responseJSON: Array(4506)
-[0 … 99]
-0:
-L1_active_power_W: "28.5"
-L1_current_A: "0.239"
-L1_energy_kWh: "0.33"
-L1_frequency_Hz: "50.0"
-L1_pf: "0.51"
-L1_voltage_V: "233.2"
-epoch: "2022-09-16 14:18:46"
-	   */
-    dt = luxon.DateTime.local(2017, 5, 15, 8, 30);
-    console.log('dt');
-    console.log(dt);
     var get_args = ''; 
-    var jsondata = $.getJSON('http://192.168.18.16/pmtr/call.php',get_args, function(jsondata) {
-	console.log('jsondata');
-	console.log(jsondata);
+    var jsondata = $.getJSON('http://hostname/pmtr/call.php',get_args, function(jsondata) {
+	//console.log('jsondata');
 
+	var key = 0;
+    var val = {};
+	
+	var L1_voltage = [];
+	var L2_voltage = [];
+	var L3_voltage = [];
 
-	var cle = 0;
-        var val = {};
-	var voltage = [];
-	var current = [];
-	var power = [];
-	var energy = [];
-	var freq = [];
-	var pf = [];
-        // mettre les autrse tableaux
-        for ([cle, val] of Object.entries(jsondata)) {
+	var L1_current = [];
+	var L2_current = [];
+	var L3_current = [];
+	
+	var L1_power = [];
+	var L2_power = [];
+	var L3_power = [];
+	
+	var L1_energy = [];
+	var L2_energy = [];
+	var L3_energy = [];
+	
+	var L1_freq = [];
+	var L2_freq = [];
+	var L3_freq = [];
+	
+	var L1_pf = [];
+	var L2_pf = [];
+	var L3_pf = [];
+	
+        // mettre les autres tableaux
+        for ([key, val] of Object.entries(jsondata)) {
 
-	    voltage.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L1_voltage_V'] - 0)});
-	    current.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L1_current_A'] - 0)});
-	    power.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L1_active_power_W'] - 0)});
-	    energy.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L1_energy_kWh'] - 0)});
-	    freq.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L1_frequency_Hz'] - 0)});
-	    pf.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L1_pf'] - 0)});
+	    L1_voltage.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L1_voltage_V'] - 0)});
+		L2_voltage.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L2_voltage_V'] - 0)});
+		L3_voltage.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L3_voltage_V'] - 0)});
+		
+	    L1_current.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L1_current_A'] - 0)});
+		L2_current.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L2_current_A'] - 0)});
+		L3_current.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L3_current_A'] - 0)});
+		
+	    L1_power.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L1_active_power_W'] - 0)});
+		L2_power.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L2_active_power_W'] - 0)});
+		L3_power.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L3_active_power_W'] - 0)});
+		
+	    L1_energy.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L1_energy_kWh'] - 0)});
+		L2_energy.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L2_energy_kWh'] - 0)});
+		L3_energy.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L3_energy_kWh'] - 0)});
+		
+	    L1_freq.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L1_frequency_Hz'] - 0)});
+		L2_freq.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L2_frequency_Hz'] - 0)});
+		L3_freq.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L3_frequency_Hz'] - 0)});
+		
+	    L1_pf.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L1_pf'] - 0)});
+	    L2_pf.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L2_pf'] - 0)});
+	    L3_pf.push({x: luxon.DateTime.fromSQL(val['epoch']).toISO(),  y: (val['L3_pf'] - 0)});
+
     	    
-	// push les autres sets
+	// pushing sets. L1 color is red, L2 is green, L3 is blue.
 	}
 
 	var data_voltage = {
@@ -71,65 +89,159 @@ epoch: "2022-09-16 14:18:46"
 	    backgroundColor: '#ffffff',
 	    borderColor: '#ff0000',
 	    fill: false,
-	    data: voltage,
+	    data: L1_voltage,
 	  }
-		// ajouter les autres sets ici
+	  ,
+	  {
+	    label: 'voltage_L2',
+	    backgroundColor: '#ffffff',
+	    borderColor: '#00ff00',
+	    fill: false,
+	    data: L2_voltage,
+	  },
+	  {
+	    label: 'voltage_L3',
+	    backgroundColor: '#ffffff',
+	    borderColor: '#0000ff',
+	    fill: false,
+	    data: L3_voltage,
+	  }
+		
 	  ]
 		}
-		var data_current = {
+		
+	var data_current = {
 	  datasets: [{
 	    label: 'current_L1',
 	    backgroundColor: '#ffffff',
 	    borderColor: '#ff0000',
 	    fill: false,
-	    data: current,
+	    data: L1_current,
+	  }
+	  ,
+	  {
+	    label: 'current_L2',
+	    backgroundColor: '#ffffff',
+	    borderColor: '#00ff00',
+	    fill: false,
+	    data: L2_current,
+	  },
+	  {
+	    label: 'current_L3',
+	    backgroundColor: '#ffffff',
+	    borderColor: '#0000ff',
+	    fill: false,
+	    data: L3_current,
 	  }
 	  
-		// ajouter les autres sets ici
+		
 	  ]
 		}
-		var data_power = {
+		
+	var data_power = {
 	  datasets: [{
 	    label: 'power_L1',
 	    backgroundColor: '#ffffff',
 	    borderColor: '#ff0000',
 	    fill: false,
-	    data: power,
+	    data: L1_power,
 	  }
-		// ajouter les autres sets ici
+	  ,
+	  {
+	    label: 'power_L2',
+	    backgroundColor: '#ffffff',
+	    borderColor: '#00ff00',
+	    fill: false,
+	    data: L2_power,
+	  }
+	  ,
+	  {
+	    label: 'power_L3',
+	    backgroundColor: '#ffffff',
+	    borderColor: '#0000ff',
+	    fill: false,
+	    data: L3_power,
+	  }
+		
 	  ]
 		}
-		var data_energy = {
+		
+	var data_energy = {
 	  datasets: [{
 	    label: 'energy_L1',
 	    backgroundColor: '#ffffff',
 	    borderColor: '#ff0000',
 	    fill: false,
-	    data: energy,
+	    data: L1_energy,
 	  }
-		// ajouter les autres sets ici
+	  ,
+	  {
+	    label: 'energy_L2',
+	    backgroundColor: '#ffffff',
+	    borderColor: '#00ff00',
+	    fill: false,
+	    data: L2_energy,
+	  },
+	  {
+	    label: 'energy_L3',
+	    backgroundColor: '#ffffff',
+	    borderColor: '#0000ff',
+	    fill: false,
+	    data: L3_energy,
+	  }
+		
 	  ]
 		}
-		var data_frequency = {
+	var data_frequency = {
 	  datasets: [{
 	    label: 'frequency_L1',
 	    backgroundColor: '#ffffff',
 	    borderColor: '#ff0000',
 	    fill: false,
-	    data: freq,
+	    data: L1_freq,
 	  }
-		// ajouter les autres sets ici
+	  ,
+	  {
+	    label: 'frequency_L2',
+	    backgroundColor: '#ffffff',
+	    borderColor: '#00ff00',
+	    fill: false,
+	    data: L2_freq,
+	  },
+	  {
+	    label: 'frequency_L3',
+	    backgroundColor: '#ffffff',
+	    borderColor: '#0000ff',
+	    fill: false,
+	    data: L3_freq,
+	  }
+		
 	  ]
 		}
-		var data_pf = {
+	var data_pf = {
 	  datasets: [{
 	    label: 'pf_L1',
 	    backgroundColor: '#ffffff',
 	    borderColor: '#ff0000',
 	    fill: false,
-	    data: pf,
+	    data: L1_pf,
 	  }
-		// ajouter les autres sets ici
+	  ,
+	  {
+	    label: 'pf_L2',
+	    backgroundColor: '#ffffff',
+	    borderColor: '#00ff00',
+	    fill: false,
+	    data: L2_pf,
+	  },
+	  {
+	    label: 'pf_L3',
+	    backgroundColor: '#ffffff',
+	    borderColor: '#0000ff',
+	    fill: false,
+	    data: L3_pf,
+	  }
+		
 	  ]
 		}
 	

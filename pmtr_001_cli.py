@@ -7,6 +7,7 @@ import time
 import struct
 import math
 import numpy as np
+import datetime
 
 from collections import deque
 from os import remove
@@ -37,6 +38,7 @@ import signal
 import sys
 
 lock_filename = None
+np.set_printoptions(suppress=True)
 
 def signal_handler(sig, frame):
     print('You pressed Ctrl+C!')
@@ -44,7 +46,7 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 
-def insert(epoch,L1_voltage_V,L1_current_A,L1_active_power_W,L1_energy_kWh,L1_frequency_Hz,L1_pf,L2_voltage_V,L2_current_A,L2_active_power_W,L2_energy_kWh,L2_frequency_Hz,L2_pf,L3_voltage_V,L3_current_A,L3_active_power_W,L3_energy_kWh,L3_frequency_Hz,L3_pf):
+def insert(table, epoch,_5V_DC_Bus_Voltage_V,_12V_DC_Bus_Voltage_V,L1_voltage_V,L1_current_A,L1_active_power_W,L1_energy_kWh,L1_frequency_Hz,L1_pf,L2_voltage_V,L2_current_A,L2_active_power_W,L2_energy_kWh,L2_frequency_Hz,L2_pf,L3_voltage_V,L3_current_A,L3_active_power_W,L3_energy_kWh,L3_frequency_Hz,L3_pf):
     # Create a connection object
     # IP address of the MySQL database server
     Host = "localhost"  
@@ -54,14 +56,16 @@ def insert(epoch,L1_voltage_V,L1_current_A,L1_active_power_W,L1_energy_kWh,L1_fr
     Password = "password"           
   
     database = "PMTR"
-    epoch = round(epoch)
-  
+    
     conn  = pymysql.connect(host=Host, user=User, password=Password, db=database)
 
     # Create a cursor object
     cur  = conn.cursor()
 
-    params = [L1_voltage_V,
+    params =  [epoch,
+              _5V_DC_Bus_Voltage_V,
+              _12V_DC_Bus_Voltage_V,
+              L1_voltage_V,
               L2_voltage_V,
               L3_voltage_V,
               L1_current_A,
@@ -81,7 +85,7 @@ def insert(epoch,L1_voltage_V,L1_current_A,L1_active_power_W,L1_energy_kWh,L1_fr
               L3_pf]
     
 
-    cur.execute("INSERT INTO instant VALUES(NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", params) 
+    cur.execute("INSERT INTO " + table + " VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", params) 
     print(f"{cur.rowcount} details inserted")
     conn.commit()
     conn.close()
@@ -210,14 +214,21 @@ def start_client():
     error_count = 0
     error_rate_pct = 0
     interval = 0
+    eval_at_seconds_prev = np.array([])
+    stop_second_prev = 0
+    window_size = 10
+    slide = window_size/2
+    new_points = 0
+    
 
     dq_instant = []
     i = 0
     while(i < 21):
-        dq_instant.append(deque(maxlen=10))
+        dq_instant.append(deque(maxlen=window_size))
         i += 1
 
     wait_int_sec()
+    absolute_start = int(time.time())
 
     while(True):
 
@@ -243,6 +254,7 @@ def start_client():
             log.info("RECV OK\n")
             log.info("time taken:{}s".format(interval))
             error_rate_pct = 100*error_count/run_id
+            new_points += 1
             log.info("ERROR RATE %: " +str( error_rate_pct) + "\n")
 
 
@@ -292,8 +304,8 @@ def start_client():
             
 
         dq_instant[20].append(start + interval/2)
-        dq_instant[0].append(finals[0])
-        dq_instant[1].append(finals[1])
+        dq_instant[0].append(finals[0]/1000.0)
+        dq_instant[1].append(finals[1]/1000.0)
         log.info("append to deque ok")
 
         i = 0
@@ -304,21 +316,54 @@ def start_client():
             instant_stack_y = np.stack(instant_ndarrays_y, axis=1)
             i += 1
 
-        if(len(dq_instant[0]) == 10):
-            print(instant_stack_y.shape)
-            instant_interp = PchipInterpolator(timestamps_x, instant_stack_y,extrapolate=False)
-            start_second = math.floor(timestamps_x[0] +1.0)
-            stop_second = int(timestamps_x[-1] -1.0)
-            evals = instant_interp(np.linspace(start_second, stop_second, num=stop_second-start_second+1, endpoint=True))
-            print(evals)
 
+        log.info("new points:" + str(new_points))
+        if(len(dq_instant[0]) == window_size) and ((new_points == window_size) or (new_points == slide)):
+            new_points = 0
+            #print(instant_stack_y.shape)
+            instant_interp = PchipInterpolator(timestamps_x, instant_stack_y,extrapolate=False)
+            start_second = math.floor(timestamps_x[0] + 1.0)
+            stop_second = int(timestamps_x[-1] - 1.0)
+            
+            eval_at_seconds = np.linspace(start_second, stop_second, num=stop_second-start_second+1, endpoint=True)
+            new_seconds = np.setdiff1d(eval_at_seconds,eval_at_seconds_prev)
+            #print("eval_at_seconds_prev: ")
+            #print(eval_at_seconds_prev - absolute_start)
+            #print("eval_at_seconds")
+            #print(eval_at_seconds - absolute_start)
+
+
+            #print("new_seconds_full: ")
+            #print(new_seconds - absolute_start)
+            new_seconds = new_seconds[new_seconds>stop_second_prev]
+            eval_at_seconds_prev = eval_at_seconds
+            stop_second_prev = stop_second
+            
+            evals = instant_interp(new_seconds)
+            #print("new_seconds_filtered: ")
+            #print(new_seconds - absolute_start)
+            #TODO : put interpolated values into separate mysql table
+            #print(evals)
+            i = 0
+            for row in evals:
+                sqltimestamp = datetime.datetime.fromtimestamp(new_seconds[i]).strftime('%Y-%m-%d %H:%M:%S')
+                insert("instant_interp", sqltimestamp, row[0], row[1], 
+                       row[2], row[5], row[8], row[11], row[14], row[17], 
+                       row[3], row[6], row[9], row[12], row[15], row[18], 
+                       row[4], row[7], row[10], row[13], row[16], row[19])
+                i += 1
+
+        
         log.debug("5VDCBusVoltage:" + str(finals[0]))
         log.debug("12VDCBusVoltage:" + str(finals[1]))
         log.debug("\n")
 
         log.info("inserting into DB.\n")
 
-        insert(time.time(), (finals[2]/10.0), (finals[5]/100.0), finals[8], (finals[11]/10), (finals[14]/10.0), (finals[17]/100.0),
+        sqltimestamp = datetime.datetime.fromtimestamp(start + interval/2).strftime('%Y-%m-%d %H:%M:%S')
+
+        insert("instant", sqltimestamp, (finals[0]/1000.0), (finals[1]/1000.0),
+            (finals[2]/10.0), (finals[5]/100.0), finals[8], (finals[11]/10), (finals[14]/10.0), (finals[17]/100.0),
             (finals[3]/10.0), (finals[6]/100.0), finals[9], (finals[12]/10), (finals[15]/10.0), (finals[18]/100.0),
             (finals[4]/10.0), (finals[7]/100.0), finals[10], (finals[13]/10), (finals[16]/10.0), (finals[19]/100.0))
     
